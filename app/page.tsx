@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div>
       <h1 className='font-bold '>Time Capsule</h1>
-      <Button>Ping your future self</Button>
+      <Button className='font-bricolage'>Ping your future self</Button>
     </div>
   )
 }
