@@ -1,37 +1,46 @@
+import connectDB from '@/db/db'
+import Mail from '@/db/models/mailModel'
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
 
-const SMTP_USERNAME = process.env.SMTP_USERNAME
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD
-
-const transporter = nodemailer.createTransport({
-  service: 'Mailgun',
-  auth: {
-    user: SMTP_USERNAME,
-    pass: SMTP_PASSWORD
-  }
-})
-
+// CREATE MAIL
 export async function POST(req: NextRequest) {
-  const { email } = await req.json()
+  await connectDB()
 
-  const mailOptions = {
-    from: 'message@timecapsule.gokulnathrs.me',
-    to: email,
-    subject: 'A Message from Your Past',
-    text: 'Hey Bud , How are you',
-    html: 'your portfolio <a href="https://gokulnathrs.me" >Here</a>'
+  const body = await req.json()
+
+  const { to, subject, message, target_date, is_recurring, userId } = body
+
+  try {
+    await Mail.create({
+      from: 'message@timecapsule.gokulnathrs.me',
+      to,
+      subject,
+      message,
+      target_date: Date.now(),
+      is_recurring,
+      userId
+    })
+
+    return NextResponse.json({
+      message: 'Mail Saved Successfully',
+      type: 'success'
+    })
+  } catch (error: any) {
+    return NextResponse.json({
+      message: error?.message || 'Error Saving Mail',
+      type: 'error'
+    })
   }
+}
 
-  transporter.sendMail(mailOptions, function (err, res) {
-    if (err) {
-      console.log(err)
-      return NextResponse.json({ message: 'Email Not sent' })
-    } else {
-      console.log('Email sent: ' + res.response)
-      return NextResponse.json({ message: 'Email sent' })
-    }
-  })
+// UPDATE MAIL
+export async function PUT(req: NextRequest) {
+  const body = await req.json()
 
-  return NextResponse.json({ message: 'Email sent' })
+  return NextResponse.json({ message: '' })
+}
+
+// DELETE MAIL
+export async function DELETE(req: NextRequest) {
+  return NextResponse.json({ message: '' })
 }
