@@ -20,7 +20,7 @@ const page = () => {
   const [totalMailsSent, setTotalMailsSent] = useState(0)
   const [recurringMails, setRecurringMails] = useState(0)
   const [mails, setMails] = useState([])
-  const { data: session } = useSession()
+  const { data: session }: any = useSession()
 
   useEffect(() => {
     // fetch
