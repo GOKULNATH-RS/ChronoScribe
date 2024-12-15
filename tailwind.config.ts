@@ -11,6 +11,7 @@ export default {
     extend: {
       colors: {
         grey: '#212121',
+        greydark: '#1C1C1C',
         text: '#CCCCCC',
         white: '#fafafa',
         black: '#0a0a0a',

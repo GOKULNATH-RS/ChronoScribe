@@ -7,8 +7,9 @@ const mailSchema = new mongoose.Schema({
   message: { type: String, required: true },
   target_date: { type: Date, required: true },
   is_recurring: { type: Boolean, required: true },
+  recurring_frequency: { type: String, default: '' },
   mail_sent_count: { type: Number, default: 0 },
-  userId: { type: String, required: true },
+  userId: { type: mongoose.Schema.ObjectId, required: true, ref: 'User' },
   date_created: { type: Date, default: Date.now },
   active: { type: Boolean, default: true },
   completed: { type: Boolean, default: false }

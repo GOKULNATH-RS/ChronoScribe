@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import Link from 'next/link'
 
 const Header = () => {
   const { data: session } = useSession()
@@ -20,12 +21,12 @@ const Header = () => {
   return (
     <header className='w-full flex justify-between items-center p-4 my-10 '>
       <div>
-        <div>
+        <Link href='/'>
           <p className='font-bricolage font-bold text-xl inline-flex'>
             Chrono<span className='text-'>Scribe</span>
             <Telescope size={26} className='text-yellow mx-1' />
           </p>
-        </div>
+        </Link>
       </div>
       <div>
         {session ? (
@@ -38,7 +39,7 @@ const Header = () => {
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className='bg-[#1C1C1C] min-w-[150px]'>
+            <DropdownMenuContent className='bg-greydark min-w-[150px]'>
               <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className='text-center '>

@@ -1,6 +1,4 @@
-import Header from '@/components/common/Header'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
 import Link from 'next/link'
 
 export default function Home() {
@@ -8,6 +6,9 @@ export default function Home() {
     <div>
       <Link href='/create-mail'>
         <Button className='font-bricolage'>Ping your future self</Button>
+      </Link>
+      <Link href='/dashboard'>
+        <Button className='font-bricolage'>Dashboard</Button>
       </Link>
     </div>
   )

@@ -4,6 +4,7 @@ import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import Header from '@/components/common/Header'
+import { Toaster } from '@/components/ui/sonner'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         <SessionProvider>
           <Header />
+          <Toaster />
           {children}
         </SessionProvider>
       </body>
