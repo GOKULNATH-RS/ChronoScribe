@@ -27,7 +27,7 @@ const page = () => {
   const [subject, setSubject] = useState<string>('')
   const [message, setMessage] = useState<string>('')
   const [dateToSend, setDateToSend] = useState<Date>()
-  const { data: session } = useSession()
+  const { data: session }: any = useSession()
 
   const router = useRouter()
 
