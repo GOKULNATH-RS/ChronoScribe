@@ -13,6 +13,7 @@ export async function GET(req: NextRequest, { params }: any) {
   var totalactive = 0
   var total = 0
   var totalmailssent = 0
+  var recurringMails = 0
 
   const mails = mailsDB.filter((mail) => {
     return mail.userId == userId
@@ -22,9 +23,17 @@ export async function GET(req: NextRequest, { params }: any) {
     if (mail.active) {
       totalactive++
     }
+    if (mail.is_recurring) recurringMails++
+
     totalmailssent += mail.mail_sent_count
     total++
   })
 
-  return NextResponse.json({ mails, total, totalactive, totalmailssent })
+  return NextResponse.json({
+    mails,
+    total,
+    totalactive,
+    totalmailssent,
+    recurringMails
+  })
 }
