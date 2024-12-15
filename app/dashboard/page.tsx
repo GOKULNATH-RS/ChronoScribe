@@ -12,16 +12,19 @@ const page = () => {
 
   useEffect(() => {
     // fetch
-    axios.get(`/api/mail?userId=${session?._id}`).then((response) => {
-      console.log(response.data)
+    axios.get(`/api/mail/${session?._id}`).then((response) => {
+      const { mails, total, totalactive, totalmailssent } = response.data
+      setTotalMails(total)
+      setTotalActiveMails(totalactive)
+      setTotalMailsSent(totalmailssent)
     })
     setTotalMails(7)
     setTotalActiveMails(7)
     setTotalMailsSent(7)
-  }, [])
+  }, [session])
 
   return (
-    <div>
+    <div className='mx-40'>
       <h1 className='text-2xl font-bold font-bricolage'>Dashboard</h1>
       <div className='w-full flex gap-4 my-2 justify-center'>
         <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
@@ -29,7 +32,7 @@ const page = () => {
             TOTAL MAILS
           </p>
           <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            0{totalMails}
+            {totalMails > 9 ? totalMails : `0${totalMails}`}
           </p>
         </div>
         <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
@@ -37,7 +40,7 @@ const page = () => {
             TOTAL ACTIVE MAILS
           </p>
           <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            0{totalActiveMails}
+            {totalActiveMails > 9 ? totalActiveMails : `0${totalActiveMails}`}
           </p>
         </div>
         <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
@@ -45,7 +48,7 @@ const page = () => {
             TOTAL MAILS SENT
           </p>
           <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            0{totalMailsSent}
+            {totalMailsSent > 9 ? totalMailsSent : `0${totalMailsSent}`}
           </p>
         </div>
         <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
