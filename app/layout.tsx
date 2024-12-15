@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import './globals.css'
+import { SessionProvider } from 'next-auth/react'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -14,7 +15,7 @@ const bricolage = Bricolage_Grotesque({
 })
 
 export const metadata: Metadata = {
-  title: 'Time Capsule',
+  title: 'ChronoScribe',
   description:
     'A App that travels time to deliver your messages for your future self'
 }
@@ -29,7 +30,7 @@ export default function RootLayout({
       <body
         className={` ${inter.className} ${bricolage.variable} antialiased dark`}
       >
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   )

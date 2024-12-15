@@ -10,18 +10,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         await connectDB()
+
         const existingUser = await User.findOne({ email: user.email })
 
-        if (!existingUser) {
-          const newUser = await User.create({
-            name: user.name,
+        if (existingUser) {
+          token._id = existingUser._id
+        } else {
+          const newUser = new User({
             email: user.email,
-            image: user.image
+            username: user.name,
+            image_url: user?.image
           })
 
+          await newUser.save()
           token._id = newUser._id
-        } else {
-          token._id = existingUser._id
         }
       }
 
