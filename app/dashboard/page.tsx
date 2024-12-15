@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 const page = () => {
@@ -74,7 +75,9 @@ const page = () => {
       <div>
         <div className='w-full flex justify-between items-baseline my-4'>
           <h1 className='text-3xl font-bold font-bricolage'>Mails</h1>
-          <Button className='bg-yellow'>Create Mail</Button>
+          <Link href='/create-mail'>
+            <Button className='bg-yellow'>Create Mail</Button>
+          </Link>
         </div>
         <div className='flex gap-4 flex-col pb-2'>
           <div className='grid grid-cols-6 w-full font-bricolage text-xl font-semibold border-b-2 border-white/50 '>
