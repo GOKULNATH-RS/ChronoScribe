@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
+import Header from '@/components/common/Header'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -28,9 +29,12 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={` ${inter.className} ${bricolage.variable} antialiased dark`}
+        className={` ${inter.className} ${bricolage.variable} antialiased dark bg-grey mx-20`}
       >
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <Header />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   )
