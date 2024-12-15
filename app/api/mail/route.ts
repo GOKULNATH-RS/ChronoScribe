@@ -8,7 +8,15 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
 
-  const { to, subject, message, target_date, is_recurring, userId } = body
+  const {
+    recipientEmail: to,
+    subject,
+    message,
+    dateToSend: target_date,
+    recurring: is_recurring,
+    recurringValue: recurring_frequency,
+    userId
+  } = body
 
   try {
     await Mail.create({
@@ -16,8 +24,9 @@ export async function POST(req: NextRequest) {
       to,
       subject,
       message,
-      target_date: Date.now(),
+      target_date,
       is_recurring,
+      recurring_frequency,
       userId
     })
 
@@ -43,4 +52,28 @@ export async function PUT(req: NextRequest) {
 // DELETE MAIL
 export async function DELETE(req: NextRequest) {
   return NextResponse.json({ message: '' })
+}
+
+// GET MAIL
+export async function GET(req: NextRequest, { params }: any) {
+  const userId = req.nextUrl.searchParams.get('userId')
+  console.log(userId)
+
+  await connectDB()
+
+  const mails = await Mail.find({ userId })
+
+  var totalactive = 0
+  var total = 0
+  var totalmailssent = 0
+
+  mails.map((mail) => {
+    if (mail.active) {
+      totalactive++
+    }
+    totalmailssent += mail.mail_sent_count
+    total++
+  })
+
+  return NextResponse.json({ mails, total, totalactive, totalmailssent })
 }
