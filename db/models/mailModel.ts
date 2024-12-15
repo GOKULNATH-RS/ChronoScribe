@@ -10,7 +10,8 @@ const mailSchema = new mongoose.Schema({
   mail_sent_count: { type: Number, default: 0 },
   userId: { type: String, required: true },
   date_created: { type: Date, default: Date.now },
-  active: { type: Boolean, default: true }
+  active: { type: Boolean, default: true },
+  completed: { type: Boolean, default: false }
 })
 
 const Mail = mongoose.models.Mail || mongoose.model('Mail', mailSchema)
