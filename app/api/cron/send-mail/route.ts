@@ -25,8 +25,6 @@ export async function GET(req: NextRequest) {
     target_date: { $gte: startOfDay, $lte: endOfDay } // Between start and end of today
   })
 
-  console.log(todayMail)
-
   todayMail.map(async (mail) => {
     const mailOptions = {
       from: 'message@timecapsule.gokulnathrs.me',
@@ -39,7 +37,7 @@ export async function GET(req: NextRequest) {
       if (err) {
         console.log(err)
       } else {
-        console.log('Email sent: ' + res.response)
+        console.log('Email sent to ' + mail.to + ': ' + res.response)
         await Mail.findByIdAndUpdate(mail._id, {
           mail_sent_count: mail.mail_sent_count + 1
         })
