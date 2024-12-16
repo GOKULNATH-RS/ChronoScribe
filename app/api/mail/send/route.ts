@@ -13,13 +13,13 @@ const transporter = nodemailer.createTransport({
 })
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json()
+  const { email, subject, text } = await req.json()
 
   const mailOptions = {
     from: 'message@timecapsule.gokulnathrs.me',
     to: email,
-    subject: 'A Message from Your Past',
-    text: 'Hey Bud , How are you',
+    subject,
+    text,
     html: 'your portfolio <a href="https://gokulnathrs.me" >Here</a>'
   }
 
