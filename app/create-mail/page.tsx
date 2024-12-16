@@ -18,7 +18,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 
 const page = () => {
   const [recurring, setRecurring] = useState(false)
@@ -28,6 +28,11 @@ const page = () => {
   const [message, setMessage] = useState<string>('')
   const [dateToSend, setDateToSend] = useState<Date>()
   const { data: session }: any = useSession()
+
+  if (!session) {
+    toast('Login to ping yourself')
+    return redirect('/')
+  }
 
   const router = useRouter()
 
@@ -132,7 +137,7 @@ const page = () => {
         <div className='w-full flex justify-center my-1'>
           <Button
             onClick={handleCreateMail}
-            className='bg-yellow hover:bg-[#ffc32b] w-max px-10 font-bricolage font-semibold text-black text-lg'
+            className='bg-yellow hover:bg-[#ffc32b] w-max px-10 font-bricolage font-medium text-black text-lg'
           >
             Ping your Future Self
             <Send size={24} />

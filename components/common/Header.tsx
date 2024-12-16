@@ -30,34 +30,41 @@ const Header = () => {
       </div>
       <div>
         {session ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className=''>
-              <Avatar>
-                <AvatarImage src={session?.user?.image as string} />
-                <AvatarFallback className=''>
-                  {session?.user?.name?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='bg-greydark min-w-[150px]'>
-              <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className='text-center '>
-                <button className='w-full m-0 bg-transparent '>
-                  Dashboard
-                </button>
-              </DropdownMenuItem>
-              <DropdownMenuItem className='p-0'>
-                <Button
-                  variant={'outline'}
-                  className='w-full m-1 mt-2 p-1 bg-transparent'
-                  onClick={() => signOut({ redirectTo: '/' })}
-                >
-                  Sign out
-                </Button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className='flex justify-center items-center gap-2'>
+            <Link href='/dashboard'>
+              <Button variant={'link'} className='font-bricolage text-lg '>
+                Dashboard
+              </Button>
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className=''>
+                <Avatar>
+                  <AvatarImage src={session?.user?.image as string} />
+                  <AvatarFallback className=''>
+                    {session?.user?.name?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className='bg-greydark min-w-[150px]'>
+                <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='text-center '>
+                  <button className='w-full m-0 bg-transparent '>
+                    Dashboard
+                  </button>
+                </DropdownMenuItem>
+                <DropdownMenuItem className='p-0'>
+                  <Button
+                    variant={'outline'}
+                    className='w-full m-1 mt-2 p-1 bg-transparent'
+                    onClick={() => signOut({ redirectTo: '/' })}
+                  >
+                    Sign out
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ) : (
           <Button
             onClick={() => {
@@ -65,7 +72,7 @@ const Header = () => {
             }}
             className='bg-yellow'
           >
-            Click me
+            Sign In
           </Button>
         )}
       </div>

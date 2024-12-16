@@ -1,13 +1,13 @@
 <img src="./assets/Logo.svg" width="100%"/>
-<br />
+
 ChronoScribe is a platform that allows you to send messages to your future self. Whether it’s a reminder, a goal, a note of encouragement, or something you think your future self needs to know, ChronoScribe helps you stay connected with your future aspirations and reflections.
 
-### How it Works
+## How it Works
 
 - User creates a message by giving the email and message content
 - Our application manages your messages and delivers them on the specified date to your mail
 
-### Tech Stack
+## Tech Stack
 
 - NextJS
 - TailwindCSS
