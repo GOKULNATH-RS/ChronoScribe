@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const today = new Date()
   const startOfDay = new Date(today)
   startOfDay.setHours(0, 0, 0, 0)
