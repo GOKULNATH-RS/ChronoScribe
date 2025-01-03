@@ -1,7 +1,7 @@
+import connectDB from '@/db/db'
 import Mail from '@/db/models/mailModel'
-import { startOfDay } from 'date-fns'
-import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { NextRequest, NextResponse } from 'next/server'
 
 const SMTP_USERNAME = process.env.SMTP_USERNAME
 const SMTP_PASSWORD = process.env.SMTP_PASSWORD
@@ -15,20 +15,21 @@ const transporter = nodemailer.createTransport({
 })
 
 export async function GET(req: NextRequest) {
-  const sendMail = new Promise(async (resolve, reject) => {
-    console.log('Sending emails')
+  try {
     const today = new Date()
-    const startOfDay = new Date(today)
-    startOfDay.setHours(0, 0, 0, 0)
+    const startOfDayTime = new Date(today)
+    startOfDayTime.setHours(0, 0, 0, 0)
 
-    const endOfDay = new Date(today)
-    endOfDay.setHours(23, 59, 59, 999)
+    const endOfDayTime = new Date(today)
+    endOfDayTime.setHours(23, 59, 59, 999)
 
-    const todayMail = await Mail.find({
-      target_date: { $gte: startOfDay, $lte: endOfDay } // Between start and end of today
+    await connectDB()
+
+    const todayMails = await Mail.find({
+      target_date: { $gte: startOfDayTime, $lte: endOfDayTime }
     })
 
-    todayMail.map(async (mail) => {
+    for (const mail of todayMails) {
       const mailOptions = {
         from: 'message@timecapsule.gokulnathrs.me',
         to: mail.to,
@@ -36,44 +37,40 @@ export async function GET(req: NextRequest) {
         text: mail.message
       }
 
-      transporter.sendMail(mailOptions, async function (err, res) {
-        if (err) {
-          console.log(err)
-          reject('error')
-        } else {
-          console.log('Email sent to ' + mail.to + ': ' + res.response)
-          await Mail.findByIdAndUpdate(mail._id, {
-            mail_sent_count: mail.mail_sent_count + 1
-          })
+      try {
+        const res = await transporter.sendMail(mailOptions)
+        console.log(`Email sent to ${mail.to}: ${res.response}`)
 
-          if (mail.is_recurring) {
-            if (mail.recurring_frequency === 'day') {
-              const nextDay = new Date(today)
-              nextDay.setDate(nextDay.getDate() + 1)
-              await Mail.findByIdAndUpdate(mail._id, { target_date: nextDay })
-            } else if (mail.recurring_frequency === 'month') {
-              const nextMonth = new Date(today)
-              nextMonth.setMonth(nextMonth.getMonth() + 1)
-              await Mail.findByIdAndUpdate(mail._id, { target_date: nextMonth })
-            } else if (mail.recurring_frequency === 'year') {
-              const nextYear = new Date(today)
-              nextYear.setFullYear(nextYear.getFullYear() + 1)
-              await Mail.findByIdAndUpdate(mail._id, { target_date: nextYear })
-            }
+        // Update mail_sent_count
+        await Mail.findByIdAndUpdate(mail._id, {
+          mail_sent_count: mail.mail_sent_count + 1
+        })
+
+        // Handle recurring mails
+        if (mail.is_recurring) {
+          let nextTargetDate = new Date(mail.target_date)
+          if (mail.recurring_frequency === 'day') {
+            nextTargetDate.setDate(nextTargetDate.getDate() + 1)
+          } else if (mail.recurring_frequency === 'month') {
+            nextTargetDate.setMonth(nextTargetDate.getMonth() + 1)
+          } else if (mail.recurring_frequency === 'year') {
+            nextTargetDate.setFullYear(nextTargetDate.getFullYear() + 1)
           }
+          await Mail.findByIdAndUpdate(mail._id, {
+            target_date: nextTargetDate
+          })
         }
-      })
-    })
-    resolve('Emails sent successfully')
-  })
+      } catch (err) {
+        console.error(`Error sending email to ${mail.to}:`, err)
+      }
+    }
 
-  await sendMail
-    .then((res) => {
-      return NextResponse.json({ message: res })
-    })
-    .catch((err) => {
-      return NextResponse.json({ message: 'Error' })
-    })
-
-  return NextResponse.json({ message: 'sending' })
+    return NextResponse.json({ message: 'Emails processed successfully.' })
+  } catch (err) {
+    console.error('Error processing emails:', err)
+    return NextResponse.json(
+      { error: 'Error processing emails.' },
+      { status: 500 }
+    )
+  }
 }

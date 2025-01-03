@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
     from: 'message@timecapsule.gokulnathrs.me',
     to: email,
     subject,
-    text,
-    html: 'your portfolio <a href="https://gokulnathrs.me" >Here</a>'
+    text
   }
 
   transporter.sendMail(mailOptions, function (err, res) {
