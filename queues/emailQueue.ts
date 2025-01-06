@@ -1,4 +1,7 @@
 import { ConnectionOptions, Queue } from 'bullmq'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 const connection: ConnectionOptions = {
   host: process.env.REDIS_HOST,
