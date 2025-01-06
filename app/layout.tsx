@@ -5,6 +5,7 @@ import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import Header from '@/components/common/Header'
 import { Toaster } from '@/components/ui/sonner'
+import Head from 'next/head'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -19,7 +20,20 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: 'ChronoScribe',
   description:
-    'A App that travels time to deliver your messages for your future self'
+    'A App that travels time to deliver your messages for your future self',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://chronoscribe.gokulnathrs.me',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 627,
+        alt: 'ChronoScribe'
+      }
+    ]
+  }
 }
 
 export default function RootLayout({
