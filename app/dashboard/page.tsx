@@ -20,107 +20,155 @@ const page = () => {
   const [totalMailsSent, setTotalMailsSent] = useState(0)
   const [recurringMails, setRecurringMails] = useState(0)
   const [mails, setMails] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const { data: session }: any = useSession()
 
   useEffect(() => {
-    // fetch
-    axios.get(`/api/mail/${session?._id}`).then((response) => {
-      const { mails, total, totalactive, totalmailssent, recurringMails } =
-        response.data
-      setTotalMails(total)
-      setTotalActiveMails(totalactive)
-      setTotalMailsSent(totalmailssent)
-      setMails(mails)
-      setRecurringMails(recurringMails)
-    })
+    const fetchMails = async () => {
+      if (!session) return
+      setIsLoading(true)
+      try {
+        const response = await axios.get(`/api/mail/${session?._id}`)
+        const { mails, total, totalactive, totalmailssent, recurringMails } = response.data
+        setTotalMails(total)
+        setTotalActiveMails(totalactive)
+        setTotalMailsSent(totalmailssent)
+        setMails(mails)
+        setRecurringMails(recurringMails)
+      } catch (err) {
+        console.error('Error fetching mails', err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchMails()
   }, [session])
 
   return (
-    <div className='mx-40'>
-      <h1 className='text-2xl font-bold font-bricolage'>Dashboard</h1>
-      <div className='w-full flex gap-4 my-2 justify-center'>
-        <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
-          <p className='text-center text-sm font-light text-text tracking-widest'>
-            TOTAL MAILS
-          </p>
-          <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            {totalMails > 9 ? totalMails : `0${totalMails}`}
-          </p>
+    <div className='max-w-6xl mx-auto px-6 py-8'>
+      <div className='flex items-center justify-between mb-6'>
+        <div>
+          <h1 className='text-3xl font-bricolage font-bold'>Dashboard</h1>
+          <p className='text-sm text-muted-foreground mt-1'>Overview of your scheduled mails</p>
         </div>
-        <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
-          <p className='text-center text-sm font-light text-text tracking-widest'>
-            TOTAL ACTIVE MAILS
-          </p>
-          <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            {totalActiveMails > 9 ? totalActiveMails : `0${totalActiveMails}`}
-          </p>
-        </div>
-        <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
-          <p className='text-center text-sm font-light text-text tracking-widest'>
-            TOTAL MAILS SENT
-          </p>
-          <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            {totalMailsSent > 9 ? totalMailsSent : `0${totalMailsSent}`}
-          </p>
-        </div>
-        <div className='w-[250px] h-[150px] bg-black/40 rounded-xl relative'>
-          <p className='text-center text-lg font-light text-text tracking-widest'>
-            RECURRING MAILS
-          </p>
-          <p className='text-9xl leading-[100px] font-bold absolute bottom-0 right-1  font-bricolage'>
-            {recurringMails > 9 ? recurringMails : `0${recurringMails}`}
-          </p>
-        </div>
+        <Link href='/create-mail'>
+          <Button className='bg-yellow'>Create Mail</Button>
+        </Link>
       </div>
-      <div>
-        <div className='w-full flex justify-between items-baseline my-4'>
-          <h1 className='text-3xl font-bold font-bricolage'>Mails</h1>
-          <Link href='/create-mail'>
-            <Button className='bg-yellow'>Create Mail</Button>
-          </Link>
-        </div>
-        <div className='flex gap-4 flex-col pb-2'>
-          <div className='grid grid-cols-6 w-full font-bricolage text-xl font-semibold border-b-2 border-white/50 '>
-            <p className='col-span-2'>Recipient mail</p>
-            <p>Content</p>
-            <p>Date To Send</p>
-            <p>Recurring</p>
-            <p>Status</p>
-          </div>
-          {mails.map((mail: any) => {
-            return (
-              <div
-                key={mail._id}
-                className='grid grid-cols-6 w-full  border-b-[1px] border-text/20 '
-              >
-                <p className='col-span-2'>{mail.to}</p>
-                <p>
-                  <Dialog>
-                    <DialogTrigger>
-                      <Button className='' variant={'outline'}>
-                        View
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogTitle>Subject</DialogTitle>
-                      <DialogDescription>{mail.subject}</DialogDescription>
-                      <DialogTitle>Message</DialogTitle>
-                      <DialogDescription>{mail.message}</DialogDescription>
-                    </DialogContent>
-                  </Dialog>
-                </p>
-                <p>{new Date(mail.target_date).toDateString()}</p>
-                <p>
-                  {mail.is_recurring
-                    ? `Every ${mail.recurring_frequency}`
-                    : 'Once'}
-                </p>
-                <p>{mail.active ? 'Active' : 'Inactive'}</p>
+
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className='rounded-xl p-4 bg-background/10 shadow-sm'>
+              <div className='h-3 w-24 bg-white/10 mb-4 rounded animate-pulse' />
+              <div className='h-10 w-full bg-white/10 rounded animate-pulse' />
+            </div>
+          ))
+        ) : (
+          <>
+            <div className='rounded-xl p-4 bg-background/10 shadow-sm'>
+              <p className='text-xs text-text uppercase tracking-widest'>Total mails</p>
+              <div className='mt-4 text-right'>
+                <span className='text-4xl font-bricolage font-bold'>
+                  {totalMails > 9 ? totalMails : `0${totalMails}`}
+                </span>
               </div>
-            )
-          })}
-        </div>
+            </div>
+            <div className='rounded-xl p-4 bg-background/10 shadow-sm'>
+              <p className='text-xs text-text uppercase tracking-widest'>Active</p>
+              <div className='mt-4 text-right'>
+                <span className='text-4xl font-bricolage font-bold'>
+                  {totalActiveMails > 9 ? totalActiveMails : `0${totalActiveMails}`}
+                </span>
+              </div>
+            </div>
+            <div className='rounded-xl p-4 bg-background/10 shadow-sm'>
+              <p className='text-xs text-text uppercase tracking-widest'>Mails sent</p>
+              <div className='mt-4 text-right'>
+                <span className='text-4xl font-bricolage font-bold'>
+                  {totalMailsSent > 9 ? totalMailsSent : `0${totalMailsSent}`}
+                </span>
+              </div>
+            </div>
+            <div className='rounded-xl p-4 bg-background/10 shadow-sm'>
+              <p className='text-xs text-text uppercase tracking-widest'>Recurring</p>
+              <div className='mt-4 text-right'>
+                <span className='text-4xl font-bricolage font-bold'>
+                  {recurringMails > 9 ? recurringMails : `0${recurringMails}`}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
+
+      <section>
+        <div className='flex items-center justify-between mb-4'>
+          <h2 className='text-2xl font-bricolage font-semibold'>Mails</h2>
+        </div>
+
+        <div className='bg-background/5 rounded-lg overflow-hidden shadow-sm'>
+          <div className='grid grid-cols-6 gap-4 px-6 py-3 text-sm font-semibold border-b border-white/10'>
+            <div className='col-span-2'>Recipient</div>
+            <div>Content</div>
+            <div>Date</div>
+            <div>Recurring</div>
+            <div>Status</div>
+          </div>
+          <div>
+            {isLoading
+              ? Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className='grid grid-cols-6 gap-4 px-6 py-4 items-center'>
+                    <div className='col-span-2'>
+                      <div className='h-4 bg-white/10 rounded w-48 animate-pulse' />
+                    </div>
+                    <div>
+                      <div className='h-4 bg-white/10 rounded w-56 animate-pulse' />
+                    </div>
+                    <div>
+                      <div className='h-4 bg-white/10 rounded w-32 animate-pulse' />
+                    </div>
+                    <div>
+                      <div className='h-4 bg-white/10 rounded w-24 animate-pulse' />
+                    </div>
+                    <div>
+                      <div className='h-4 bg-white/10 rounded w-20 animate-pulse' />
+                    </div>
+                  </div>
+                ))
+              : mails.map((mail: any) => (
+                  <div
+                    key={mail._id}
+                    className='grid grid-cols-6 gap-4 px-6 py-4 items-center hover:bg-white/2'
+                  >
+                    <div className='col-span-2 truncate'>{mail.to}</div>
+                    <div>
+                      <Dialog>
+                        <DialogTrigger>
+                          <Button variant={'outline'} size={'sm'}>
+                            View
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogTitle className='font-semibold'>{mail.subject}</DialogTitle>
+                          <DialogDescription className='my-2 whitespace-pre-wrap'>{mail.message}</DialogDescription>
+                          <div className='mt-4 text-sm text-muted-foreground'>
+                            To: {mail.to}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <div>{new Date(mail.target_date).toDateString()}</div>
+                    <div>
+                      {mail.is_recurring ? `Every ${mail.recurring_frequency}` : 'Once'}
+                    </div>
+                    <div>{mail.active ? 'Active' : 'Inactive'}</div>
+                  </div>
+                ))}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

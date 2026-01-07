@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   const { email, subject, text } = await req.json()
 
   const mailOptions = {
-    from: 'message@timecapsule.gokulnathrs.me',
+    from: 'message@chronoscribe.gokulnathrs.com',
     to: email,
     subject,
     text

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://chronoscribe.gokulnathrs.me',
+    url: 'https://chronoscribe.gokulnathrs.com',
     images: [
       {
         url: '/opengraph-image.png',
@@ -52,6 +52,6 @@ export default function RootLayout({
           {children}
         </SessionProvider>
       </body>
-    </html>
+    </html> 
   )
 }
