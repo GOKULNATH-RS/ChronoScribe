@@ -1,11 +1,9 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
 import { Bricolage_Grotesque, Inter } from 'next/font/google'
 import './globals.css'
 import { SessionProvider } from 'next-auth/react'
 import Header from '@/components/common/Header'
 import { Toaster } from '@/components/ui/sonner'
-import Head from 'next/head'
 
 const inter = Inter({
   variable: '--font-inter',

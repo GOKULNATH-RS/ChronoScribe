@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  ChronoScribe — Email Worker
+#
+#  Deploy this as a separate always-on service on Railway / Render / Fly.io.
+#  The Next.js app (Vercel) enqueues jobs; this worker drains the queue.
+#
+#  Quick deploy options:
+#    • Railway  → railway up  (root = this Dockerfile.worker)
+#    • Render   → New Web Service → Docker → Dockerfile path: Dockerfile.worker
+#    • Fly.io   → fly launch --dockerfile Dockerfile.worker
+# ─────────────────────────────────────────────────────────────────────────────
+
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source
+COPY . .
+
+# Health-check: verify the worker process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s \
+  CMD pgrep -f "tsx workers/emailWorker.ts" || exit 1
+
+ENV NODE_ENV=production
+
+# Run TypeScript directly with tsx (no separate compile step required)
+CMD ["npx", "tsx", "workers/emailWorker.ts"]

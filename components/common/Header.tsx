@@ -48,10 +48,10 @@ const Header = () => {
               <DropdownMenuContent className='bg-greydark min-w-[150px]'>
                 <DropdownMenuLabel>{session?.user?.name}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className='text-center '>
-                  <button className='w-full m-0 bg-transparent '>
+                <DropdownMenuItem asChild className='text-center'>
+                  <Link href='/dashboard' className='w-full'>
                     Dashboard
-                  </button>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className='p-0'>
                   <Button

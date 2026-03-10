@@ -12,7 +12,10 @@ const mailSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   date_created: { type: Date, default: Date.now },
   active: { type: Boolean, default: true },
-  completed: { type: Boolean, default: false }
+  completed: { type: Boolean, default: false },
+  // Tracks whether this mail is currently sitting in the BullMQ queue.
+  // Prevents the cron from enqueuing the same mail twice.
+  queued: { type: Boolean, default: false }
 })
 
 const Mail = mongoose.models.Mail || mongoose.model('Mail', mailSchema)

@@ -3,7 +3,7 @@ import { FlipWords } from '@/components/ui/flip-words'
 import Link from 'next/link'
 
 export default function Home() {
-  const words = ['Memories', 'Goals', 'Accomplisments', 'Reminder']
+  const words = ['Memories', 'Goals', 'Accomplishments', 'Reminder']
   return (
     <div className='min-h-[20rem] flex flex-col justify-center '>
       <div className='h-max m-4 px-4'>

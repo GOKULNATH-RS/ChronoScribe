@@ -1,36 +1,45 @@
+import { auth } from '@/auth'
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
-
-const SMTP_USERNAME = process.env.SMTP_USERNAME
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD
 
 const transporter = nodemailer.createTransport({
   service: 'Mailgun',
   auth: {
-    user: SMTP_USERNAME,
-    pass: SMTP_PASSWORD
+    user: process.env.SMTP_USERNAME,
+    pass: process.env.SMTP_PASSWORD
   }
 })
 
 export async function POST(req: NextRequest) {
-  const { email, subject, text } = await req.json()
-
-  const mailOptions = {
-    from: 'message@chronoscribe.gokulnathrs.com',
-    to: email,
-    subject,
-    text
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  transporter.sendMail(mailOptions, function (err, res) {
-    if (err) {
-      console.log(err)
-      return NextResponse.json({ message: 'Email Not sent' })
-    } else {
-      console.log('Email sent: ' + res.response)
-      return NextResponse.json({ message: 'Email sent' })
-    }
-  })
+  const { email, subject, text } = await req.json()
 
-  return NextResponse.json({ message: 'Email sent' })
+  if (!email || !subject || !text) {
+    return NextResponse.json(
+      { message: 'email, subject, and text are required' },
+      { status: 400 }
+    )
+  }
+
+  try {
+    // Properly awaited — errors now propagate correctly
+    const info = await transporter.sendMail({
+      from: process.env.MAIL_FROM,
+      to: email,
+      subject,
+      text
+    })
+
+    return NextResponse.json({ message: 'Email sent', messageId: info.messageId })
+  } catch (err: any) {
+    console.error('Email send error:', err)
+    return NextResponse.json(
+      { message: 'Email not sent', error: err.message },
+      { status: 500 }
+    )
+  }
 }

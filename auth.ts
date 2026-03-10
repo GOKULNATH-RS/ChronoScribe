@@ -3,9 +3,18 @@ import Google from 'next-auth/providers/google'
 import connectDB from './db/db'
 import User from './db/models/userModel'
 
+declare module 'next-auth' {
+  interface Session {
+    _id: string
+  }
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
   secret: process.env.AUTH_SECRET,
+  pages: {
+    signIn: '/'
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -29,8 +38,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return token
     },
-    async session({ session, token }: any) {
-      session._id = token._id
+    async session({ session, token }) {
+      session._id = token._id as string
       return session
     }
   }

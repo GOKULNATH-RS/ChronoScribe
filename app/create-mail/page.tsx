@@ -13,29 +13,32 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Send, ArrowLeft } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 import axios from 'axios'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 const page = () => {
+  const router = useRouter()
   const [recurring, setRecurring] = useState(false)
   const [recurringValue, setRecurringValue] = useState<string>('')
   const [recipientEmail, setRecipientEmail] = useState<string>('')
   const [subject, setSubject] = useState<string>('')
   const [message, setMessage] = useState<string>('')
   const [dateToSend, setDateToSend] = useState<Date>()
-  const { data: session }: any = useSession()
+  const { data: session, status }: any = useSession()
 
-  if (!session) {
-    toast('Login to ping yourself')
-    return redirect('/')
-  }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      toast('Login to ping yourself')
+      router.replace('/')
+    }
+  }, [status, router])
 
-  const router = useRouter()
+  if (status === 'loading') return null
 
   const handleCreateMail = () => {
     // Validation

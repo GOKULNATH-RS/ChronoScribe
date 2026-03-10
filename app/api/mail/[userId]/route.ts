@@ -1,39 +1,50 @@
+import { auth } from '@/auth'
 import connectDB from '@/db/db'
 import Mail from '@/db/models/mailModel'
-import mongoose from 'mongoose'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(req: NextRequest, { params }: any) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ userId: string }> }) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+  }
+
   const { userId } = await params
+
+  // Users can only access their own mails
+  if (String(session._id) !== String(userId)) {
+    return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
+  }
+
   await connectDB()
-  console.log(userId)
 
-  const mailsDB = await Mail.find({})
+  try {
+    // Filter at the DB level — never load the entire collection into memory
+    const mails = await Mail.find({ userId })
 
-  var totalactive = 0
-  var total = 0
-  var totalmailssent = 0
-  var recurringMails = 0
+    let totalActive = 0
+    let total = 0
+    let totalMailsSent = 0
+    let recurringMails = 0
 
-  const mails = mailsDB.filter((mail) => {
-    return mail.userId == userId
-  })
-
-  mails.map((mail) => {
-    if (mail.active) {
-      totalactive++
+    for (const mail of mails) {
+      total++
+      if (mail.active) totalActive++
+      if (mail.is_recurring) recurringMails++
+      totalMailsSent += mail.mail_sent_count
     }
-    if (mail.is_recurring) recurringMails++
 
-    totalmailssent += mail.mail_sent_count
-    total++
-  })
-
-  return NextResponse.json({
-    mails,
-    total,
-    totalactive,
-    totalmailssent,
-    recurringMails
-  })
+    return NextResponse.json({
+      mails,
+      total,
+      totalactive: totalActive,
+      totalmailssent: totalMailsSent,
+      recurringMails
+    })
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: error?.message || 'Error fetching mails' },
+      { status: 500 }
+    )
+  }
 }
